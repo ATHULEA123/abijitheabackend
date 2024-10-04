@@ -1,6 +1,8 @@
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs'); // Import fs for file handling
+const fs = require('fs'); 
+const { promisify } = require('util');
+const unlinkAsync = promisify(fs.unlink);
 const ArtistData = require('../Model/ArtistDataSchema');
 
 // Multer storage configuration
@@ -88,41 +90,37 @@ const deleteArtist = async (req, res) => {
     if (!artist) {
       return res.status(404).json({ message: 'Artist not found' });
     }
-
+    const uploadsPath = path.join(__dirname, '../Public/Uploads');
+    const deleteFileIfExists = async (filePath) => {
+      if (fs.existsSync(filePath)) {
+        try {
+          await unlinkAsync(filePath);
+        } catch (err) {
+          console.error('Error deleting file:', err);
+        }
+      } else {
+        console.error('File not found:', filePath);
+      }
+    };
+    const imagePath = path.join(uploadsPath, artist.artimage);
+    const resumePath = path.join(uploadsPath, artist.resume);
+    const portfolioPath = path.join(uploadsPath, artist.portfolio);
     if (artist.artimage) {
-      const imagePath = path.join(__dirname, '../', artist.artimage);
-      fs.unlink(imagePath, (err) => {
-        if (err) {
-          console.error('Error deleting image:', err);
-        }
-      });
+      await deleteFileIfExists(imagePath);
     }
-
     if (artist.resume) {
-      const resumePath = path.join(__dirname, '../', artist.resume);
-      fs.unlink(resumePath, (err) => {
-        if (err) {
-          console.error('Error deleting resume:', err);
-        }
-      });
+      await deleteFileIfExists(resumePath);
     }
     if (artist.portfolio) {
-      const portfolioPath = path.join(__dirname, '../', artist.portfolio);
-      fs.unlink(portfolioPath, (err) => {
-        if (err) {
-          console.error('Error deleting portfolio:', err);
-        }
-      });
+      await deleteFileIfExists(portfolioPath);
     }
-
     await ArtistData.findByIdAndDelete(artist._id);
     return res.status(200).json({ message: 'Artist data deleted successfully' });
   } catch (error) {
-    console.error('Error deleting artist:', error);
     return res.status(500).json({ message: 'Error deleting artist', error });
   }
 };
-
+ 
 module.exports = {
   getArtist, 
   createArtist,
