@@ -8,7 +8,7 @@ const app = express();
 const port = process.env.PORT || 3001;
 
 connectDb();
-app.use(cors());
+app.use(cors()); 
 app.use(bodyParser.json()); 
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -16,8 +16,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/Uploads', express.static(path.join(__dirname, 'Public/Uploads')));
 
 // Route setup
-app.use('/', require('../Backend/Routes/ArtworkRoute'));
-app.use('/art', require('../Backend/Routes/ArtistRoute'));
+app.use('/', require('./Routes/ArtworkRoute'));
+app.use('/art', require('./Routes/ArtistRoute'));
 
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
