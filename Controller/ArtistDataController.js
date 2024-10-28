@@ -1,5 +1,4 @@
 
-
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -24,7 +23,7 @@ const fileUpload = multer({
     if (allowedTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error('Only .jpeg, .png, and .pdf files are allowed!'), false); // Throw error for invalid file types
+      cb(new Error('Only .jpeg, .png, and .pdf files are allowed!'), false); 
     }
   },
 }).fields([
@@ -40,9 +39,7 @@ const getArtist = async (req, res, next) => {
     
      if (!artist) {
       return res.json([]);
-    //   const error = new Error('Artist not found');
-    //   error.statusCode = 404;
-    //   return next(error);
+    
      }
     return res.status(200).json(artist);
   } catch (error) {
@@ -125,10 +122,9 @@ const deleteArtist = async (req, res, next) => {
 
     return res.status(200).json({ message: 'Artist data deleted successfully' });
   } catch (error) {
-    next(error); // Pass the error to the error handling middleware
+    next(error); 
   }
 };
-
 module.exports = {
   getArtist,
   createArtist,
